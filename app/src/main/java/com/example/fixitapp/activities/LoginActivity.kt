@@ -36,14 +36,18 @@ class LoginActivity : AppCompatActivity() {
 
             val isValid = dbHelper.validateUser(email, password)
 
-            if (isValid) {
-                Toast.makeText(this, "Inicio de sesión exitoso ✅", Toast.LENGTH_SHORT).show()
+            if (dbHelper.validateUser(email, password)) {
+                Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+
+                // 👉 Crear Intent para ir al HomeActivity y enviar el correo del usuario
                 val intent = Intent(this, HomeActivity::class.java)
+                intent.putExtra("usuario", email)
                 startActivity(intent)
-                finish()
+                finish() // Cierra LoginActivity para que no vuelva atrás con “atrás”
             } else {
-                Toast.makeText(this, "Credenciales incorrectas ❌", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Correo o contraseña incorrectos", Toast.LENGTH_SHORT).show()
             }
+
         }
 
         // Botón para ir al registro
