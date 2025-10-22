@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="24dp">
+    android:layout_height="match_parent">
 
     <LinearLayout
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <TextView
             android:text="Registro de Usuario"
             android:textSize="22sp"
-            android:textStyle="bold"
             android:layout_marginBottom="20dp"
-            android:gravity="center"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <EditText
@@ -29,6 +28,7 @@
             android:id="@+id/etEmail"
             android:hint="Correo electrónico"
             android:inputType="textEmailAddress"
+            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -36,6 +36,7 @@
             android:id="@+id/etPassword"
             android:hint="Contraseña"
             android:inputType="textPassword"
+            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -43,13 +44,21 @@
             android:id="@+id/etConfirmPassword"
             android:hint="Confirmar contraseña"
             android:inputType="textPassword"
+            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/btnRegistrar"
-            android:text="Registrarse"
-            android:layout_marginTop="20dp"
+            android:id="@+id/btnRegister"
+            android:text="Registrar"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btnGoToLogin"
+            android:text="¿Ya tienes cuenta? Inicia sesión"
+            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
