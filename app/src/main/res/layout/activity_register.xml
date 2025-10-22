@@ -1,66 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    android:padding="24dp">
 
     <LinearLayout
         android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
-            android:text="Registro de Usuario"
-            android:textSize="22sp"
-            android:layout_marginBottom="20dp"
+            android:text="Crear cuenta"
+            android:textColor="#1976D2"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
         <EditText
-            android:id="@+id/etNombre"
+            android:id="@+id/name"
             android:hint="Nombre completo"
-            android:inputType="textPersonName"
+            android:backgroundTint="#1976D2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" />
 
         <EditText
-            android:id="@+id/etEmail"
+            android:id="@+id/email"
             android:hint="Correo electrónico"
+            android:backgroundTint="#1976D2"
             android:inputType="textEmailAddress"
-            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" />
 
         <EditText
-            android:id="@+id/etPassword"
+            android:id="@+id/password"
             android:hint="Contraseña"
+            android:backgroundTint="#1976D2"
             android:inputType="textPassword"
-            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/etConfirmPassword"
-            android:hint="Confirmar contraseña"
-            android:inputType="textPassword"
-            android:layout_marginTop="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp" />
 
         <Button
             android:id="@+id/btnRegister"
-            android:text="Registrar"
-            android:layout_marginTop="16dp"
+            android:text="Registrarse"
+            android:backgroundTint="#1976D2"
+            android:textColor="#FFFFFF"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
 
         <Button
             android:id="@+id/btnGoToLogin"
-            android:text="¿Ya tienes cuenta? Inicia sesión"
-            android:layout_marginTop="8dp"
+            android:text="Volver al Login"
+            android:backgroundTint="#64B5F6"
+            android:textColor="#FFFFFF"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 </ScrollView>
