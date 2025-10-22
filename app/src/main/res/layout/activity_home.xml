@@ -7,10 +7,16 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tvBienvenida"
-        android:text="Bienvenido 👋"
+        android:id="@+id/tvWelcome"
+        android:text="Bienvenido a FixItApp"
         android:textSize="20sp"
+        android:layout_marginBottom="16dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cerrar sesión" />
 </LinearLayout>
