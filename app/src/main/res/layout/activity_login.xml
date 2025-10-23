@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"/>
 
     <EditText
-        android:id="@+id/email"
+        android:id="@+id/etEmail"
         android:hint="Correo electrónico"
         android:backgroundTint="#1976D2"
         android:inputType="textEmailAddress"
@@ -26,7 +26,7 @@
         android:layout_marginBottom="12dp" />
 
     <EditText
-        android:id="@+id/password"
+        android:id="@+id/etPassword"
         android:hint="Contraseña"
         android:backgroundTint="#1976D2"
         android:inputType="textPassword"
