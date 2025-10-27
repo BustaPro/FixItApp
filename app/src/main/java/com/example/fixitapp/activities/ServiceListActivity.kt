@@ -6,12 +6,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fixitapp.R
-import com.example.fixitapp.data.DBHelper
+import com.example.fixitapp.data.DatabaseHelper
 import com.example.fixitapp.model.Service
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ServiceListActivity : AppCompatActivity() {
-    private lateinit var dbHelper: DBHelper
+    private lateinit var dbHelper: DatabaseHelper
     private lateinit var recyclerView: RecyclerView
     private lateinit var serviceAdapter: ServiceAdapter
 
@@ -19,7 +19,7 @@ class ServiceListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_service_list)
 
-        dbHelper = DBHelper(this)
+        dbHelper = DatabaseHelper(this)
         recyclerView = findViewById(R.id.recyclerViewServices)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
