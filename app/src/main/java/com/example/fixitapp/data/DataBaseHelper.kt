@@ -135,6 +135,14 @@ class DatabaseHelper(context: Context) :
         db.close()
         return service
     }
+
+    fun deleteService(id: Int): Boolean {
+        val db = writableDatabase
+        val result = db.delete("services", "id=?", arrayOf(id.toString()))
+        db.close()
+        return result > 0
+    }
+
 }
 
 
