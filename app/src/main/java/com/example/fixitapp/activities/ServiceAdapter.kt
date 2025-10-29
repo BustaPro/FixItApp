@@ -10,14 +10,14 @@ import com.example.fixitapp.R
 import com.example.fixitapp.model.Service
 
 class ServiceAdapter(
-    private val serviceList: MutableList<Service>,
-    private val onDeleteClick: (Service) -> Unit
+    private val services: List<Service>,
+    private val onDeleteClick: (Service) -> Unit,
+    private val onItemClick: (Service) -> Unit
 ) : RecyclerView.Adapter<ServiceAdapter.ServiceViewHolder>() {
 
-    inner class ServiceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ServiceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val tvNombre: TextView = view.findViewById(R.id.tvNombre)
         val tvTipo: TextView = view.findViewById(R.id.tvTipo)
-        val tvFecha: TextView = view.findViewById(R.id.tvFecha)
-        val tvEstado: TextView = view.findViewById(R.id.tvEstado)
         val btnEliminar: Button = view.findViewById(R.id.btnEliminar)
     }
 
@@ -28,15 +28,19 @@ class ServiceAdapter(
     }
 
     override fun onBindViewHolder(holder: ServiceViewHolder, position: Int) {
-        val service = serviceList[position]
-        holder.tvTipo.text = "Servicio: ${service.tipoServicio}"
-        holder.tvFecha.text = "Fecha: ${service.fecha}"
-        holder.tvEstado.text = "Estado: ${service.estado}"
+        val service = services[position]
+        holder.tvNombre.text = service.nombreCliente
+        holder.tvTipo.text = service.tipoServicio
+
+        holder.itemView.setOnClickListener {
+            onItemClick(service)
+        }
 
         holder.btnEliminar.setOnClickListener {
             onDeleteClick(service)
         }
     }
 
-    override fun getItemCount(): Int = serviceList.size
+    override fun getItemCount(): Int = services.size
 }
+

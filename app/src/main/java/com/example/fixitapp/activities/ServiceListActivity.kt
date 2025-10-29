@@ -22,35 +22,37 @@ class ServiceListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_service_list)
 
-        // Inicializar DB y RecyclerView
         db = DatabaseHelper(this)
         recyclerView = findViewById(R.id.recyclerViewServices)
         val btnLogout = findViewById<Button>(R.id.btnLogout)
+        val btnAddService = findViewById<Button>(R.id.btnAddService)
 
-        // Cargar servicios desde la base de datos
         services = db.getAllServices().toMutableList()
 
-
-
-        // Configurar adapter con opción de eliminar
-        adapter = ServiceAdapter(services) { service ->
-            db.deleteService(service.id)
-            services.remove(service)
-            adapter.notifyDataSetChanged()
-            Toast.makeText(this, "Servicio eliminado", Toast.LENGTH_SHORT).show()
-        }
+        // Adapter con dos acciones: eliminar y ver detalles
+        adapter = ServiceAdapter(
+            services,
+            onDeleteClick = { service ->
+                db.deleteService(service.id)
+                services.remove(service)
+                adapter.notifyDataSetChanged()
+                Toast.makeText(this, "Servicio eliminado", Toast.LENGTH_SHORT).show()
+            },
+            onItemClick = { service ->
+                val intent = Intent(this, ServiceDetailsActivity::class.java)
+                intent.putExtra("service_id", service.id)
+                startActivity(intent)
+            }
+        )
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        val btnAddService = findViewById<Button>(R.id.btnAddService)
         btnAddService.setOnClickListener {
             val intent = Intent(this, NewServiceActivity::class.java)
             startActivity(intent)
         }
 
-
-        // Botón para cerrar sesión
         btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -60,11 +62,10 @@ class ServiceListActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // recargar datos desde la DB y notificar al adapter
         val fresh = db.getAllServices()
         services.clear()
         services.addAll(fresh)
         adapter.notifyDataSetChanged()
     }
-
 }
+
