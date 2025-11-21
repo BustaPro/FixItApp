@@ -14,45 +14,38 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FixitApp">
 
-        <activity
-            android:name=".activities.ServiceListActivity"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <!-- ✅ Solo LoginActivity debe ser LAUNCHER -->
         <activity
             android:name=".activities.LoginActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.RegisterActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity
-            android:name=".activities.HomeActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <!-- ❌ Ya NO debe ser launcher -->
         <activity
             android:name=".TestDBActivity"
-            android:exported="true"> <!-- 👈 Agregado -->
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:exported="false" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity
+            android:name=".activities.RegisterActivity"
+            android:exported="false" />
+
+        <!-- 🔵 Tema FixIt para TODA la app -->
+        <activity
+            android:name=".activities.ServiceListActivity"
+            android:exported="false" />
+
         <activity
             android:name=".activities.NewServiceActivity"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:exported="false" />
 
         <activity
             android:name=".activities.ServiceDetailsActivity"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:exported="false" />
 
     </application>
 

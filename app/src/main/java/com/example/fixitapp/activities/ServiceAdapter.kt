@@ -1,12 +1,10 @@
 package com.example.fixitapp.activities
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fixitapp.R
+import com.example.fixitapp.databinding.ItemServiceBinding
 import com.example.fixitapp.model.Service
 
 class ServiceAdapter(
@@ -15,32 +13,59 @@ class ServiceAdapter(
     private val onItemClick: (Service) -> Unit
 ) : RecyclerView.Adapter<ServiceAdapter.ServiceViewHolder>() {
 
-    class ServiceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvNombre: TextView = view.findViewById(R.id.tvNombre)
-        val tvTipo: TextView = view.findViewById(R.id.tvTipo)
-        val btnEliminar: Button = view.findViewById(R.id.btnEliminar)
-    }
+    init { setHasStableIds(true) }
+
+    inner class ServiceViewHolder(val binding: ItemServiceBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServiceViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_service, parent, false)
-        return ServiceViewHolder(view)
+        val binding = ItemServiceBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return ServiceViewHolder(binding)
     }
+
+    override fun getItemId(position: Int): Long = services[position].id.toLong()
 
     override fun onBindViewHolder(holder: ServiceViewHolder, position: Int) {
         val service = services[position]
-        holder.tvNombre.text = service.nombreCliente
-        holder.tvTipo.text = service.tipoServicio
+        val b = holder.binding
 
-        holder.itemView.setOnClickListener {
+        // --- BINDING SEGURO Y LIGERO ---
+        b.tvNombre.text = service.nombreCliente
+        b.tvTipo.text = service.tipoServicio
+
+        b.ivIcon.setImageResource(getIconFor(service.tipoServicio))
+
+        // click item
+        b.root.setOnClickListener {
             onItemClick(service)
         }
 
-        holder.btnEliminar.setOnClickListener {
+        // click eliminar
+        b.btnEliminar.setOnClickListener {
             onDeleteClick(service)
         }
     }
 
     override fun getItemCount(): Int = services.size
-}
 
+    private fun getIconFor(tipo: String): Int {
+        val t = tipo.lowercase()
+
+        return when {
+            "repar" in t || "electro" in t ->
+                R.drawable.man
+
+            "limp" in t || "aseo" in t ->
+                R.drawable.broom
+
+            "mant" in t || "hogar" in t ->
+                R.drawable.repairhousebyiconsvgco
+
+            else -> R.drawable.man
+        }
+    }
+}

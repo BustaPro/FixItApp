@@ -36,17 +36,19 @@ class LoginActivity : AppCompatActivity() {
 
             val isValid = dbHelper.validateUser(email, password)
 
-            if (dbHelper.validateUser(email, password)) {
+            if (isValid) {
                 Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
 
-                // 👉 Crear Intent para ir al HomeActivity y enviar el correo del usuario
-                val intent = Intent(this, HomeActivity::class.java)
+                // 👉 Ir directamente a la lista de servicios
+                val intent = Intent(this, ServiceListActivity::class.java)
                 intent.putExtra("usuario", email)
                 startActivity(intent)
-                finish() // Cierra LoginActivity para que no vuelva atrás con “atrás”
+                finish()
+
             } else {
                 Toast.makeText(this, "Correo o contraseña incorrectos", Toast.LENGTH_SHORT).show()
             }
+
 
         }
 

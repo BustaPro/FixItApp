@@ -2,12 +2,13 @@ package com.example.fixitapp.data
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.fixitapp.model.Service
 
 class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, "FixItApp.db", null, 2) { // 👈 Versión 2 (añade tabla services)
+    SQLiteOpenHelper(context, "FixItApp.db", null, 2) {
 
     override fun onCreate(db: SQLiteDatabase) {
         // Tabla de usuarios
@@ -45,82 +46,98 @@ class DatabaseHelper(context: Context) :
         }
     }
 
-    // ---------- USUARIOS ----------
+    // ------------------- USUARIOS -------------------
+
     fun registerUser(nombre: String, email: String, password: String): Boolean {
-        val db = this.writableDatabase
-        val cursor = db.rawQuery("SELECT * FROM usuarios WHERE email = ?", arrayOf(email))
-        if (cursor.count > 0) {
-            cursor.close()
-            db.close()
-            return false
-        }
+        val db = writableDatabase
+
+        val cursor = db.rawQuery(
+            "SELECT id FROM usuarios WHERE email = ?",
+            arrayOf(email)
+        )
+
+        val exists = cursor.count > 0
         cursor.close()
 
-        val values = ContentValues()
-        values.put("nombre", nombre)
-        values.put("email", email)
-        values.put("password", password)
+        if (exists) return false
+
+        val values = ContentValues().apply {
+            put("nombre", nombre)
+            put("email", email)
+            put("password", password)
+        }
 
         val result = db.insert("usuarios", null, values)
-        db.close()
         return result != -1L
     }
 
+
     fun validateUser(email: String, password: String): Boolean {
-        val db = this.readableDatabase
+        val db = readableDatabase
+
         val cursor = db.rawQuery(
-            "SELECT * FROM usuarios WHERE email = ? AND password = ?",
+            "SELECT id FROM usuarios WHERE email = ? AND password = ?",
             arrayOf(email, password)
         )
+
         val exists = cursor.count > 0
         cursor.close()
-        db.close()
         return exists
     }
 
-    // ---------- SERVICIOS ----------
+    // ------------------- SERVICIOS -------------------
+
     fun addService(service: Service): Boolean {
         val db = writableDatabase
-        val values = ContentValues()
-        values.put("nombreCliente", service.nombreCliente)
-        values.put("tipoServicio", service.tipoServicio)
-        values.put("fecha", service.fecha)
-        values.put("descripcion", service.descripcion)
-        values.put("estado", service.estado)
 
-        val result = db.insert("services", null, values)
-        db.close()
-        return result != -1L
+        val values = ContentValues().apply {
+            put("nombreCliente", service.nombreCliente)
+            put("tipoServicio", service.tipoServicio)
+            put("fecha", service.fecha)
+            put("descripcion", service.descripcion)
+            put("estado", service.estado)
+        }
+
+        return db.insert("services", null, values) != -1L
     }
+
 
     fun getAllServices(): List<Service> {
         val serviceList = mutableListOf<Service>()
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM services", null)
+
+        val cursor: Cursor = db.rawQuery("SELECT * FROM services", null)
 
         if (cursor.moveToFirst()) {
             do {
-                val service = Service(
-                    id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                    nombreCliente = cursor.getString(cursor.getColumnIndexOrThrow("nombreCliente")),
-                    tipoServicio = cursor.getString(cursor.getColumnIndexOrThrow("tipoServicio")),
-                    fecha = cursor.getString(cursor.getColumnIndexOrThrow("fecha")),
-                    descripcion = cursor.getString(cursor.getColumnIndexOrThrow("descripcion")),
-                    estado = cursor.getString(cursor.getColumnIndexOrThrow("estado"))
+                serviceList.add(
+                    Service(
+                        id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                        nombreCliente = cursor.getString(cursor.getColumnIndexOrThrow("nombreCliente")),
+                        tipoServicio = cursor.getString(cursor.getColumnIndexOrThrow("tipoServicio")),
+                        fecha = cursor.getString(cursor.getColumnIndexOrThrow("fecha")),
+                        descripcion = cursor.getString(cursor.getColumnIndexOrThrow("descripcion")),
+                        estado = cursor.getString(cursor.getColumnIndexOrThrow("estado"))
+                    )
                 )
-                serviceList.add(service)
             } while (cursor.moveToNext())
         }
 
         cursor.close()
-        db.close()
         return serviceList
     }
 
+
     fun getServiceById(id: Int): Service? {
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM services WHERE id = ?", arrayOf(id.toString()))
+
+        val cursor = db.rawQuery(
+            "SELECT * FROM services WHERE id = ?",
+            arrayOf(id.toString())
+        )
+
         var service: Service? = null
+
         if (cursor.moveToFirst()) {
             service = Service(
                 id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
@@ -131,19 +148,16 @@ class DatabaseHelper(context: Context) :
                 estado = cursor.getString(cursor.getColumnIndexOrThrow("estado"))
             )
         }
+
         cursor.close()
-        db.close()
         return service
     }
 
+
     fun deleteService(id: Int): Boolean {
         val db = writableDatabase
-        val result = db.delete("services", "id=?", arrayOf(id.toString()))
-        db.close()
-        return result > 0
+        return db.delete("services", "id=?", arrayOf(id.toString())) > 0
     }
 
+    // IMPORTANTE: NO cerramos la DB manualmente, Android la gestiona.
 }
-
-
-

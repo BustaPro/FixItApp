@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="@drawable/bg_fixit"
     android:padding="24dp">
 
     <LinearLayout
@@ -13,16 +13,19 @@
 
         <TextView
             android:text="Registro de Usuario"
-            android:textColor="#1976D2"
-            android:textSize="22sp"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
             android:textStyle="bold"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <EditText
             android:id="@+id/etNombre"
             android:hint="Nombre completo"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#E0E0E0"
+            android:backgroundTint="#FFFFFF"
             android:inputType="textPersonName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,6 +34,9 @@
         <EditText
             android:id="@+id/etEmail"
             android:hint="Correo electrónico"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#E0E0E0"
+            android:backgroundTint="#FFFFFF"
             android:inputType="textEmailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -39,6 +45,9 @@
         <EditText
             android:id="@+id/etPassword"
             android:hint="Contraseña"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#E0E0E0"
+            android:backgroundTint="#FFFFFF"
             android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -47,10 +56,13 @@
         <EditText
             android:id="@+id/etConfirmPassword"
             android:hint="Confirmar contraseña"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#E0E0E0"
+            android:backgroundTint="#FFFFFF"
             android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="20dp" />
 
         <Button
             android:id="@+id/btnRegister"
@@ -63,11 +75,13 @@
         <Button
             android:id="@+id/btnGoToLogin"
             android:text="Volver al Login"
-            android:backgroundTint="#64B5F6"
+            android:backgroundTint="#1976D2"
             android:textColor="#FFFFFF"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
+
 </ScrollView>
+
