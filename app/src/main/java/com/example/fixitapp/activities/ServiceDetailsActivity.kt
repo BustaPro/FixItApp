@@ -8,6 +8,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.fixitapp.R
 import com.example.fixitapp.data.DatabaseHelper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ServiceDetailsActivity : AppCompatActivity() {
 
@@ -35,26 +39,40 @@ class ServiceDetailsActivity : AppCompatActivity() {
             return
         }
 
-        val service = dbHelper.getServiceById(serviceId)
+        // 🚀 Cargar datos en SEGUNDO PLANO (evita ANR)
+        CoroutineScope(Dispatchers.IO).launch {
 
+            val service = dbHelper.getServiceById(serviceId)
 
-        if (service != null) {
-            tvNombre.text = service.nombreCliente
-            tvTipo.text = service.tipoServicio
-            tvFecha.text = service.fecha
-            tvDescripcion.text = service.descripcion
-            tvEstado.text = "Estado: ${service.estado}"
+            withContext(Dispatchers.Main) {
 
-            // Técnico random
-            val tecnicoNombre = getRandomTecnico()
-            tvTecnico.text = "Técnico asignado: $tecnicoNombre"
+                if (service != null) {
+                    tvNombre.text = service.nombreCliente
+                    tvTipo.text = service.tipoServicio
+                    tvFecha.text = service.fecha
+                    tvDescripcion.text = service.descripcion
+                    tvEstado.text = "Estado: ${service.estado}"
 
-            // Foto random
-            imgTecnico.setImageResource(getRandomTecnicoFoto())
+                    val prefs = getSharedPreferences("tecnicos_fixit", MODE_PRIVATE)
+                    var tecnicoNombre = prefs.getString("tecnico_$serviceId", null)
 
-        } else {
-            Toast.makeText(this, "No se pudo cargar el servicio", Toast.LENGTH_SHORT).show()
-            finish()
+                    if (tecnicoNombre == null) {
+                        // Primera vez → asignamos uno
+                        tecnicoNombre = getRandomTecnico()
+                        prefs.edit().putString("tecnico_$serviceId", tecnicoNombre).apply()
+                    }
+
+                    tvTecnico.text = "Técnico asignado: $tecnicoNombre"
+                    imgTecnico.setImageResource(getRandomTecnicoFoto())
+
+                } else {
+                    Toast.makeText(this@ServiceDetailsActivity,
+                        "No se pudo cargar el servicio",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
+                }
+            }
         }
 
         btnVolver.setOnClickListener {

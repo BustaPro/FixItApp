@@ -2,6 +2,8 @@ package com.example.fixitapp.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.Toast
@@ -26,6 +28,16 @@ class ServiceListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_service_list)
+
+        // 🔥 DESACTIVA animación por defecto del sistema
+        overridePendingTransition(0, 0)
+
+        // ⭐ ANIMACIÓN DESDE ABAJO
+        val root = findViewById<View>(R.id.rootServiceList)
+        root.post {
+            val anim = AnimationUtils.loadAnimation(this, R.anim.slide_in_bottom)
+            root.startAnimation(anim)
+        }
 
         db = DatabaseHelper(this)
         recyclerView = findViewById(R.id.recyclerViewServices)
@@ -76,7 +88,6 @@ class ServiceListActivity : AppCompatActivity() {
         db.close()
         super.onDestroy()
     }
-
 
     private fun loadServicesAsync() {
         lifecycleScope.launch(Dispatchers.IO) {
