@@ -4,6 +4,7 @@
     <color name="blueFixitDark">#1976D2</color> <!-- Versión más oscura -->
     <color name="blueFixitLight">#64B5F6</color> <!-- Versión clara -->
     <color name="white">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
 
 
 </resources>

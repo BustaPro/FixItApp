@@ -2,9 +2,7 @@ package com.example.fixitapp.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.fixitapp.R
 import com.example.fixitapp.data.DatabaseHelper
@@ -26,26 +24,24 @@ class RegisterActivity : AppCompatActivity() {
         val btnRegister = findViewById<Button>(R.id.btnRegister)
         val btnGoToLogin = findViewById<Button>(R.id.btnGoToLogin)
 
-        // Botón de registro
         btnRegister.setOnClickListener {
             val nombre = etNombre.text.toString().trim()
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString()
             val confirmPassword = etConfirmPassword.text.toString()
 
-            // Validaciones
             if (nombre.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(this, "Correo electrónico inválido", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Correo inválido", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (password.length < 6) {
-                Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Mínimo 6 caracteres", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -57,19 +53,18 @@ class RegisterActivity : AppCompatActivity() {
             val success = dbHelper.registerUser(nombre, email, password)
 
             if (success) {
-                Toast.makeText(this, "Usuario registrado correctamente", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "¡Usuario registrado con éxito!", Toast.LENGTH_SHORT).show()
+                // REDIRIGE AL LOGIN, NO DIRECTO A SERVICIOS
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
                 finish()
             } else {
-                Toast.makeText(this, "El usuario ya existe o hubo un error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Usuario ya existe", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Botón para volver al login
         btnGoToLogin.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
     }

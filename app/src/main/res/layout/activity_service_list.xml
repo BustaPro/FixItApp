@@ -24,6 +24,36 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"/>
 
+        <!-- NUEVO: Layout para nombre + bandera -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="10dp">
+
+            <!-- Bandera -->
+            <ImageView
+                android:id="@+id/imgFlag"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/ic_launcher_foreground"
+                android:background="@drawable/circle_white"
+                android:padding="2dp"/>
+
+            <!-- Nombre Usuario -->
+            <TextView
+                android:id="@+id/txtUserName"
+                android:text="Usuario"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
         <Button
             android:id="@+id/btnLogout"
             android:text="Salir"
@@ -89,5 +119,3 @@
     </RelativeLayout>
 
 </RelativeLayout>
-
-

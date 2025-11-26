@@ -8,10 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.fixitapp.R
 import com.example.fixitapp.data.DatabaseHelper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.fixitapp.model.Service
 
 class ServiceDetailsActivity : AppCompatActivity() {
 
@@ -32,47 +29,43 @@ class ServiceDetailsActivity : AppCompatActivity() {
         val imgTecnico = findViewById<ImageView>(R.id.imgTecnicoDetail)
         val btnVolver = findViewById<Button>(R.id.btnVolver)
 
-        val serviceId = intent.getIntExtra("service_id", -1)
-        if (serviceId == -1) {
+        val service = intent.getSerializableExtra("service_data") as? Service
+
+        if (service == null) {
             Toast.makeText(this, "Error: servicio no encontrado", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
-        // 🚀 Cargar datos en SEGUNDO PLANO (evita ANR)
-        CoroutineScope(Dispatchers.IO).launch {
+        if (service.isExternal) {
+            // 🚀 Servicio de la API externa
+            tvNombre.text = service.nombreCliente
+            tvTipo.text = service.tipoServicio
+            tvFecha.text = service.fecha
+            tvDescripcion.text = service.descripcion
+            tvEstado.text = "Estado: ${service.estado}"
 
-            val service = dbHelper.getServiceById(serviceId)
+            tvTecnico.text = "Técnico asignado: API Externa"
+            imgTecnico.setImageResource(R.drawable.tecnico2) // 👈 Un ícono de API, usa cualquiera
 
-            withContext(Dispatchers.Main) {
+        } else {
+            // 📌 Servicio local → desde SQLite
+            tvNombre.text = service.nombreCliente
+            tvTipo.text = service.tipoServicio
+            tvFecha.text = service.fecha
+            tvDescripcion.text = service.descripcion
+            tvEstado.text = "Estado: ${service.estado}"
 
-                if (service != null) {
-                    tvNombre.text = service.nombreCliente
-                    tvTipo.text = service.tipoServicio
-                    tvFecha.text = service.fecha
-                    tvDescripcion.text = service.descripcion
-                    tvEstado.text = "Estado: ${service.estado}"
+            val prefs = getSharedPreferences("tecnicos_fixit", MODE_PRIVATE)
+            var tecnicoNombre = prefs.getString("tecnico_${service.id}", null)
 
-                    val prefs = getSharedPreferences("tecnicos_fixit", MODE_PRIVATE)
-                    var tecnicoNombre = prefs.getString("tecnico_$serviceId", null)
-
-                    if (tecnicoNombre == null) {
-                        // Primera vez → asignamos uno
-                        tecnicoNombre = getRandomTecnico()
-                        prefs.edit().putString("tecnico_$serviceId", tecnicoNombre).apply()
-                    }
-
-                    tvTecnico.text = "Técnico asignado: $tecnicoNombre"
-                    imgTecnico.setImageResource(getRandomTecnicoFoto())
-
-                } else {
-                    Toast.makeText(this@ServiceDetailsActivity,
-                        "No se pudo cargar el servicio",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    finish()
-                }
+            if (tecnicoNombre == null) {
+                tecnicoNombre = getRandomTecnico()
+                prefs.edit().putString("tecnico_${service.id}", tecnicoNombre).apply()
             }
+
+            tvTecnico.text = "Técnico asignado: $tecnicoNombre"
+            imgTecnico.setImageResource(getRandomTecnicoFoto())
         }
 
         btnVolver.setOnClickListener {
@@ -81,10 +74,8 @@ class ServiceDetailsActivity : AppCompatActivity() {
     }
 
     private fun getRandomTecnico(): String {
-        val nombres = listOf(
-            "Carlos Herrera", "Pedro Muñoz", "Diego Campos",
-            "Matías Vidal", "Luis Vega", "Javier Torres", "Nicolás Bravo"
-        )
+        val nombres = listOf("Carlos Herrera", "Pedro Muñoz", "Diego Campos",
+            "Matías Vidal", "Luis Vega", "Javier Torres", "Nicolás Bravo")
         return nombres.random()
     }
 
@@ -101,5 +92,4 @@ class ServiceDetailsActivity : AppCompatActivity() {
         dbHelper.close()
         super.onDestroy()
     }
-
 }

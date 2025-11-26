@@ -16,6 +16,7 @@ class NewServiceActivity : AppCompatActivity() {
 
     private lateinit var dbHelper: DatabaseHelper
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_service)

@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.fixitapp.model.Service
 
 class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, "FixItApp.db", null, 2) {
+    SQLiteOpenHelper(context, "FixItApp.db", null, 3) {
 
     override fun onCreate(db: SQLiteDatabase) {
         // Tabla de usuarios
@@ -17,7 +17,8 @@ class DatabaseHelper(context: Context) :
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "nombre TEXT NOT NULL," +
                     "email TEXT NOT NULL UNIQUE," +
-                    "password TEXT NOT NULL)"
+                    "password TEXT NOT NULL," +
+                    "nacionalidad TEXT)"  // ← NUEVA COLUMNA
         )
 
         // Tabla de servicios
@@ -33,6 +34,13 @@ class DatabaseHelper(context: Context) :
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+
+        // Si el usuario viene de versión 2 → añadir columna nacionalidad
+        if (oldVersion < 3) {
+            db.execSQL("ALTER TABLE usuarios ADD COLUMN nacionalidad TEXT")
+        }
+
+        // Asegurar services si alguien viene de muy atrás
         if (oldVersion < 2) {
             db.execSQL(
                 "CREATE TABLE IF NOT EXISTS services (" +
@@ -48,7 +56,8 @@ class DatabaseHelper(context: Context) :
 
     // ------------------- USUARIOS -------------------
 
-    fun registerUser(nombre: String, email: String, password: String): Boolean {
+    fun registerUser(nombre: String, email: String, password: String, nacionalidad: String? = ""): Boolean {
+
         val db = writableDatabase
 
         val cursor = db.rawQuery(
@@ -65,12 +74,11 @@ class DatabaseHelper(context: Context) :
             put("nombre", nombre)
             put("email", email)
             put("password", password)
+            put("nacionalidad", nacionalidad ?: "")         // ← NUEVO
         }
 
-        val result = db.insert("usuarios", null, values)
-        return result != -1L
+        return db.insert("usuarios", null, values) != -1L
     }
-
 
     fun validateUser(email: String, password: String): Boolean {
         val db = readableDatabase
@@ -83,6 +91,26 @@ class DatabaseHelper(context: Context) :
         val exists = cursor.count > 0
         cursor.close()
         return exists
+    }
+
+    fun getUserData(email: String): Pair<String, String?>? {
+        val db = readableDatabase
+
+        val cursor = db.rawQuery(
+            "SELECT nombre, nacionalidad FROM usuarios WHERE email = ?",
+            arrayOf(email)
+        )
+
+        var data: Pair<String, String?>? = null
+
+        if (cursor.moveToFirst()) {
+            val nombre = cursor.getString(cursor.getColumnIndexOrThrow("nombre"))
+            val nacionalidad = cursor.getString(cursor.getColumnIndexOrThrow("nacionalidad"))
+            data = Pair(nombre, nacionalidad)
+        }
+
+        cursor.close()
+        return data
     }
 
     // ------------------- SERVICIOS -------------------
@@ -100,7 +128,6 @@ class DatabaseHelper(context: Context) :
 
         return db.insert("services", null, values) != -1L
     }
-
 
     fun getAllServices(): List<Service> {
         val serviceList = mutableListOf<Service>()
@@ -127,7 +154,6 @@ class DatabaseHelper(context: Context) :
         return serviceList
     }
 
-
     fun getServiceById(id: Int): Service? {
         val db = readableDatabase
 
@@ -153,11 +179,8 @@ class DatabaseHelper(context: Context) :
         return service
     }
 
-
     fun deleteService(id: Int): Boolean {
         val db = writableDatabase
         return db.delete("services", "id=?", arrayOf(id.toString())) > 0
     }
-
-    // IMPORTANTE: NO cerramos la DB manualmente, Android la gestiona.
 }

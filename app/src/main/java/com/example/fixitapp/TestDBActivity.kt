@@ -14,6 +14,7 @@ class TestDBActivity : AppCompatActivity() {
 
         // Creamos un servicio de prueba
         val testService = Service(
+            id = 0,
             nombreCliente = "Bastián Bustamante",
             tipoServicio = "Reparación TV",
             fecha = "23/10/2025",
