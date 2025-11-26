@@ -20,34 +20,18 @@ import com.example.fixitapp.model.LoginResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import okhttp3.ResponseBody
+
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var dbHelper: DatabaseHelper
-    private lateinit var api: ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
         dbHelper = DatabaseHelper(this)
-        api = RetrofitClient.apiService
-
-        val root = findViewById<android.widget.LinearLayout>(R.id.rootLogin)
-
-        val slide = TranslateAnimation(0f, 0f, 200f, 0f).apply {
-            duration = 600
-            interpolator = DecelerateInterpolator()
-        }
-
-        val fade = AlphaAnimation(0f, 1f).apply {
-            duration = 600
-        }
-
-        val animSet = AnimationSet(true)
-        animSet.addAnimation(slide)
-        animSet.addAnimation(fade)
-        root.startAnimation(animSet)
 
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etPassword = findViewById<EditText>(R.id.etPassword)
@@ -56,70 +40,73 @@ class LoginActivity : AppCompatActivity() {
 
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString().trim()
-            val password = etPassword.text.toString()
+            val password = etPassword.text.toString().trim()
 
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Intentamos login por API primero
-            val request = LoginRequest(email, password)
-            api.loginUser(request).enqueue(object : Callback<LoginResponse> {
-                override fun onResponse(
-                    call: Call<LoginResponse>,
-                    response: Response<LoginResponse>
-                ) {
-                    val loginExitosoApi = response.isSuccessful && response.body()?.success == true
+            // 👉 JSON para API (OkHttp)
+            val json = """
+                {
+                    "email": "$email",
+                    "password": "$password"
+                }
+            """.trimIndent()
 
-                    // Si la API falla o el usuario no existe ahí, revisamos base de datos local
+            val client = okhttp3.OkHttpClient()
+            val mediaType = okhttp3.MediaType.parse("application/json; charset=utf-8")
+            val body = okhttp3.RequestBody.create(mediaType, json)
+
+            val request = okhttp3.Request.Builder()
+                .url("https://backend-login-a2iz.onrender.com/login")
+                .post(body)
+                .build()
+
+            Thread {
+                try {
+                    val response = client.newCall(request).execute()
+                    val responseBody = response.body()?.string()
+                    val loginExitosoApi = responseBody?.contains("\"success\":true") == true
+
+                    // Revisamos login local también
                     val loginExitosoLocal = dbHelper.validateUser(email, password)
 
-                    if (loginExitosoApi || loginExitosoLocal) {
-                        val sharedPrefs = getSharedPreferences("FixItSession", MODE_PRIVATE)
-                        sharedPrefs.edit().putString("USER_EMAIL", email).apply()
+                    runOnUiThread {
+                        if (loginExitosoApi || loginExitosoLocal) {
+                            // Guardar sesión
+                            val sharedPrefs = getSharedPreferences("FixItSession", MODE_PRIVATE)
+                            sharedPrefs.edit().putString("USER_EMAIL", email).apply()
 
-                        Toast.makeText(
-                            this@LoginActivity,
-                            "Inicio de sesión exitoso",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            Toast.makeText(
+                                this,
+                                "Inicio de sesión exitoso",
+                                Toast.LENGTH_SHORT
+                            ).show()
 
-                        startActivity(Intent(this@LoginActivity, ServiceListActivity::class.java))
-                        finish()
-                    } else {
+                            // Navegar a servicios
+                            startActivity(Intent(this, ServiceListActivity::class.java))
+                            finish()
+                        } else {
+                            Toast.makeText(
+                                this,
+                                "Correo o contraseña incorrectos",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    runOnUiThread {
                         Toast.makeText(
-                            this@LoginActivity,
-                            "Correo o contraseña incorrectos",
-                            Toast.LENGTH_SHORT
+                            this,
+                            "Error de conexión: ${e.message}",
+                            Toast.LENGTH_LONG
                         ).show()
                     }
                 }
-
-                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                    // Si falla la API, intentamos login local
-                    val loginExitosoLocal = dbHelper.validateUser(email, password)
-                    if (loginExitosoLocal) {
-                        val sharedPrefs = getSharedPreferences("FixItSession", MODE_PRIVATE)
-                        sharedPrefs.edit().putString("USER_EMAIL", email).apply()
-
-                        Toast.makeText(
-                            this@LoginActivity,
-                            "Inicio de sesión exitoso (modo offline)",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        startActivity(Intent(this@LoginActivity, ServiceListActivity::class.java))
-                        finish()
-                    } else {
-                        Toast.makeText(
-                            this@LoginActivity,
-                            "Error de conexión con el servidor y usuario no existe",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            })
+            }.start()
         }
 
         btnGoToRegister.setOnClickListener {
